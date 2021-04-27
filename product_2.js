@@ -14,16 +14,14 @@ $(document).ready(function () {
     $("#product-img").append(image);
   }
 
-     
-
   $.get(
     "https://5d76bf96515d1a0014085cf9.mockapi.io/product/2",
     function (response) {
       var productData = response;
       $("#left-preview-img").attr("src", productData.preview);
-      // console.log( $("#product-title").attr("h1",productData.name))
       var MainCard = document.getElementById("product-conterner");
       var productName = document.createElement("h1");
+      // var iconShopping = document.getElementById("cartBox");
       productName.innerText = productData.name;
       productName.id = "product-title";
       var productBrand = document.createElement("p");
@@ -45,7 +43,7 @@ $(document).ready(function () {
       var prductPreviw = document.createElement("h4");
       prductPreviw.innerText = "Product Preview";
       prductPreviw.className = "product-preview";
-      var AddBtn = document.getElementById("AddBtn")
+      var AddBtn = document.getElementById("AddBtn");
       var photoproduct = document.getElementById("product-img");
 
       var productCard = document.getElementById("prodect-details");
@@ -59,48 +57,120 @@ $(document).ready(function () {
       MainCard.appendChild(photoproduct);
       MainCard.appendChild(AddBtn);
       var addToCardBtn = $("#add-to-cart-btn");
-     var items = [];
-    for(var i=0; i < addToCardBtn.length; i++){
-    addToCardBtn[i].addEventListener('click', function(e){
-      if(typeof(Storage) !== "undifined"){
-        var item = {
-          id: productData.id,
-          name: productName.innerText=productData.name,
-          brand: productBrand.innerText=productData.brand,
-          description: productDescription.innerText=productData.description,
-          price : prductPriceSpan.innerText=productData.price,
-          photos: productData.photos,
-          preview: productData.preview,
-          size: productData.size,
-          isAccessory: productData.isAccessory,
-          count: 0
-       };
-       if(JSON.parse(localStorage.getItem('items'))=== null){
-        items.push(item)
-        localStorage.setItem("items",JSON.stringify(items))
-        window.location.reload();
-       }else{
-        var localItems = JSON.parse(localStorage.getItem('items'))
-        localItems.map(data=>{
-          if(item.id == data.id){
-            item.count = data.count+1
-          }else{
-            items.push(data)
+      var products = []
+      for(var i=0; i<addToCardBtn.length; i++){
+        var cartBtn = addToCardBtn[i]
+        cartBtn.addEventListener('click', ()=>{
+          // console.log(productData.photos[0])
+          var product = {
+            id: productData.id,
+            name: (productName.innerText = productData.name),
+            brand: (productBrand.innerText = productData.brand),
+            description: (productDescription.innerText = productData.description),
+            price: (prductPriceSpan.innerText = productData.price),
+            totalPrice: (prductPriceSpan.innerText = productData.price),
+            photos: productData.photos,
+            image:productData.photos[0],
+            preview: productData.preview,
+            size: productData.size,
+            isAccessory: productData.isAccessory,
+            count: 1,
+          }
+          addItemLocal(product)
+        })
+      }
+      function addItemLocal(product){
+        var cartItem = JSON.parse(localStorage.getItem('productList'))
+        if(cartItem===null){
+          products.push(product)
+          localStorage.setItem('productList',JSON.stringify(products))
+          // console.log(cartItem)
+        }else{
+          cartItem.forEach(item => {
+            if(product.name == item.name){
+              product.count = item.count += 1;
+              product.totalPrice = item.totalPrice += product.totalPrice;
+            }else{
+              products.push(item)
+            }
+          });
+          products.push(product)
+        }
+        localStorage.setItem('productList', JSON.stringify(products))
+        window.location.reload()
+        console.log(product)
+      }
+      function displayCartItem(){
+        var html = '';
+        var cartItem = JSON.parse(localStorage.getItem('productList'))
+        cartItem.forEach(item =>{
+          html += `
+          <div class="forCount"><h5>Total Items:${item.count}</h5></div>
+          <div id="MainChekoutCon">
+          <div class="cardList">
+          <div class="forImage"><img src="${item.image}" alt=""></div>
+          <div>
+          <h4>${item.name}</h4>
+          <p>Amount: Rs${item.price}</p>
+          </div>
+          <div class="removeItem"><i class="fas fa-trash remove"></i></div> 
+          </div>
+          </div>
+          
+          `
+        })
+        document.querySelector(".displayCart").innerHTML = html;
+      }
+      displayCartItem()
+      function cartNumberDisplay(){
+        var cartNumber = 0;
+        var cartItem = JSON.parse(localStorage.getItem('productList'))
+        cartItem.forEach(item =>{
+          cartNumber = item.count +=cartNumber;
+        })
+        console.log(cartNumber)
+        document.querySelector("#shoping-section p").textContent = cartNumber;
+      }
+      cartNumberDisplay()
+      
+     var removeItem = $(".remove")
+     for(var i=0; i<removeItem.length; i++){
+       var removeBtn = removeItem[i]
+       removeBtn.addEventListener('click', ()=>{
+        var cartItem = JSON.parse(localStorage.getItem('productList'))
+        console.log(event.target.parentElement.parentElement.children[1].children[0].textContent)
+        cartItem.forEach(item =>{
+          if(item.name !=event.target.parentElement.parentElement.children[1].children[0].textContent){
+            products.push(item)
           }
         })
-        items.push(item)
-        localStorage.setItem('items', JSON.stringify(items));
-        window.location.reload();
-        console.log(localItems)
-       }
-      }
-    })
-  }
-      for (var i = 0; i < productData.photos.length; i++) {
-        renderProductImages(productData.photos[i], i);
-      }
-    }
-  );
-
-
+        localStorage.setItem('productList', JSON.stringify(products))
+        window.location.reload()
+       })
+     }
+    //  function subTotal(){
+    //    var subTotal =0;
+    //   var cartItem = JSON.parse(localStorage.getItem('productList'))
+    //    cartItem.forEach(item =>{
+    //      subTotal = item.totalPrice += subTotal
+    //    })
+    //    console.log(subTotal)
+    //    document.querySelector(".priceView h2").textContent = subTotal
+    //  }
+    //  subTotal()
+     for (var i = 0; i < productData.photos.length; i++) {
+       renderProductImages(productData.photos[i], i);
+     }
+   }
+ );
+ function subTotal(){
+     var subTotal =0;
+    var cartItem = JSON.parse(localStorage.getItem('productList'))
+     cartItem.forEach(item =>{
+       subTotal = item.totalPrice += subTotal
+     })
+     console.log(subTotal)
+     document.querySelector(".priceView h2").textContent = subTotal
+   }
+   subTotal()
 });
