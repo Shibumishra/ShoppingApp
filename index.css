@@ -425,3 +425,26 @@ position: fixed;
 bottom: 50px;
 right: 50px;
 }
+.popup{
+  display: none;
+}
+.popup-container{
+  position: absolute;
+  top: 30%;
+  left: 40%;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+.conform-order{
+  font-size: 120px;
+  color: rgb(14, 218, 75);
+}
+.popup-container h4{
+  font-size: 25px;
+  font-weight: 600;
+  margin: 10px;
+}
+.popup-container p{
+  font-size: 15px;
+}

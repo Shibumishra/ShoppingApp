@@ -160,5 +160,14 @@ $(document).ready(function () {
      document.querySelector(".priceView span").textContent = subTotal
    }
    subTotal()
+   orderPlaced()
 });
-      
+
+function orderPlaced(){
+ var btn = document.getElementById('place-order');
+ btn.addEventListener('click', () =>{
+   document.querySelector('.totalpriceCart').style.display='none'
+   document.getElementById('popup').style.display='block'
+   document.getElementById('displayCart').style.display='none'
+ })
+}
